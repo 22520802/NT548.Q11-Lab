@@ -1,0 +1,11 @@
+{
+  "Parameters": {
+    "Prefix": "lab01-cf-final",
+    "VpcCidr": "10.0.0.0/16",
+    "PublicSubnetCidr": "10.0.1.0/24",
+    "PrivateSubnetCidr": "10.0.2.0/24",
+    "InstanceType": "t2.micro",
+    "KeyName": "lab01-key",
+    "AllowedIp": "0.0.0.0/0"
+  }
+}

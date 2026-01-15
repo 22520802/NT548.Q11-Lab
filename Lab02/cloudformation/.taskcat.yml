@@ -1,0 +1,8 @@
+project:
+  name: lab01-test
+  regions:
+    - us-east-1
+  s3_bucket: lab01-cf-source 
+tests:
+  default:
+    template: cloudformation.yml
