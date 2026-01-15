@@ -1,0 +1,51 @@
+name: "Terraform CI/CD"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  terraform:
+    name: "Terraform"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+
+      # 1. Kiểm tra định dạng code
+      - name: Terraform Format
+        run: terraform fmt -check
+        working-directory: Lab01/terraform
+
+      # 2. Khởi tạo và kiểm tra lỗi cú pháp
+      - name: Terraform Init & Validate
+        run: |
+          terraform init
+          terraform validate
+        working-directory: Lab01/terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
+
+      # 3. Quét bảo mật bằng Checkov
+      - name: Checkov Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: Lab01/terraform
+          framework: terraform
+
+      # 4. Triển khai hạ tầng lên AWS
+      - name: Terraform Apply
+        if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+        run: terraform apply -auto-approve
+        working-directory: Lab01/terraform
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: "us-east-1"
