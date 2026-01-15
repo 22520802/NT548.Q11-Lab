@@ -7,7 +7,7 @@ variable "prefix" {
 variable "ami_id" {
   description = "AMI ID for the instances"
   type        = string
-  default     = "ami-0e83be366243f524a"  # Amazon Linux 2023 in us-east-1
+  default     = "ami-0e83be366243f524a" # Amazon Linux 2023 in us-east-1
 }
 
 variable "instance_type" {
@@ -40,4 +40,4 @@ variable "key_name" {
   description = "Name of the key pair to use for SSH access"
   type        = string
   default     = null
-} 
+}

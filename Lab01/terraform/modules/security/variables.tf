@@ -12,8 +12,8 @@ variable "vpc_id" {
 variable "allowed_ip" {
   description = "IP address allowed to connect to public instances"
   type        = string
-  default     = "14.187.82.155/32"  
-} 
+  default     = "14.187.82.155/32"
+}
 
 variable "public_subnet_id" {
   description = "ID of the public subnet"
@@ -23,5 +23,5 @@ variable "public_subnet_id" {
 variable "private_subnet_id" {
   description = "ID of the private subnet"
   type        = string
-} 
+}
 

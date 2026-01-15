@@ -6,7 +6,7 @@ resource "aws_vpc" "main" {
   cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
-  
+
   tags = {
     Name = "${var.prefix}-vpc"
   }
@@ -17,7 +17,7 @@ resource "aws_kms_key" "cloudwatch" {
   description             = "KMS key for CloudWatch Logs encryption"
   deletion_window_in_days = 30
   enable_key_rotation     = true
-  
+
   policy = jsonencode({
     Version = "2012-10-17",
     Id      = "key-policy-cloudwatch",
@@ -48,7 +48,7 @@ resource "aws_kms_key" "cloudwatch" {
       }
     ]
   })
-  
+
   tags = {
     Name = "${var.prefix}-cloudwatch-kms-key"
   }
@@ -67,7 +67,7 @@ resource "aws_cloudwatch_log_group" "flow_log_group" {
   name              = "/aws/vpc-flow-log/${var.prefix}"
   retention_in_days = 365
   kms_key_id        = aws_kms_key.cloudwatch.arn
-  
+
   tags = {
     Name = "${var.prefix}-vpc-flow-log-group"
   }
@@ -76,7 +76,7 @@ resource "aws_cloudwatch_log_group" "flow_log_group" {
 # VPC Flow Log IAM Role
 resource "aws_iam_role" "flow_log_role" {
   name = "${var.prefix}-flow-log-role"
-  
+
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -95,7 +95,7 @@ resource "aws_iam_role" "flow_log_role" {
 resource "aws_iam_role_policy" "flow_log_policy" {
   name = "${var.prefix}-flow-log-policy"
   role = aws_iam_role.flow_log_role.id
-  
+
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -122,13 +122,13 @@ resource "aws_iam_role_policy" "flow_log_policy" {
 # Default Security Group Management
 resource "aws_default_security_group" "default" {
   vpc_id = aws_vpc.main.id
-  
+
   # Explicitly deny all inbound traffic
   # No ingress rules means all inbound traffic is denied
 
   # Explicitly deny all outbound traffic
   # No egress rules means all outbound traffic is denied
-  
+
   tags = {
     Name = "${var.prefix}-default-sg-managed"
   }
@@ -140,7 +140,7 @@ resource "aws_subnet" "public" {
   cidr_block              = var.public_subnet_cidr
   map_public_ip_on_launch = false
   availability_zone       = "${var.region}a"
-  
+
   tags = {
     Name = "${var.prefix}-public-subnet"
   }
@@ -151,7 +151,7 @@ resource "aws_subnet" "private" {
   vpc_id            = aws_vpc.main.id
   cidr_block        = var.private_subnet_cidr
   availability_zone = "${var.region}b"
-  
+
   tags = {
     Name = "${var.prefix}-private-subnet"
   }
@@ -160,7 +160,7 @@ resource "aws_subnet" "private" {
 # Internet Gateway
 resource "aws_internet_gateway" "igw" {
   vpc_id = aws_vpc.main.id
-  
+
   tags = {
     Name = "${var.prefix}-internet-gateway"
   }
@@ -169,7 +169,7 @@ resource "aws_internet_gateway" "igw" {
 # Elastic IP for NAT Gateway
 resource "aws_eip" "nat_eip" {
   domain = "vpc"
-  
+
   tags = {
     Name = "${var.prefix}-nat-eip"
   }
@@ -179,23 +179,23 @@ resource "aws_eip" "nat_eip" {
 resource "aws_nat_gateway" "nat" {
   allocation_id = aws_eip.nat_eip.id
   subnet_id     = aws_subnet.public.id
-  
+
   tags = {
     Name = "${var.prefix}-nat-gateway"
   }
-  
+
   depends_on = [aws_internet_gateway.igw]
 }
 
 # Public Route Table
 resource "aws_route_table" "public" {
   vpc_id = aws_vpc.main.id
-  
+
   route {
     cidr_block = "0.0.0.0/0"
     gateway_id = aws_internet_gateway.igw.id
   }
-  
+
   tags = {
     Name = "${var.prefix}-public-route-table"
   }
@@ -204,12 +204,12 @@ resource "aws_route_table" "public" {
 # Private Route Table
 resource "aws_route_table" "private" {
   vpc_id = aws_vpc.main.id
-  
+
   route {
     cidr_block     = "0.0.0.0/0"
     nat_gateway_id = aws_nat_gateway.nat.id
   }
-  
+
   tags = {
     Name = "${var.prefix}-private-route-table"
   }

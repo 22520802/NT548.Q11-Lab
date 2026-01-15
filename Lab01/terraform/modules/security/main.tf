@@ -12,7 +12,7 @@ resource "aws_security_group" "default" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow HTTPS outbound traffic"
   }
-  
+
   egress {
     from_port   = 80
     to_port     = 80
@@ -30,7 +30,7 @@ resource "aws_security_group" "default" {
 resource "aws_network_interface" "default_sg_eni" {
   subnet_id       = var.public_subnet_id
   security_groups = [aws_security_group.default.id]
-  
+
   tags = {
     Name = "${var.prefix}-default-sg-eni"
   }
@@ -74,7 +74,7 @@ resource "aws_security_group" "public_ec2" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow HTTPS outbound traffic"
   }
-  
+
   egress {
     from_port   = 80
     to_port     = 80
@@ -110,7 +110,7 @@ resource "aws_security_group" "public_ec2" {
 resource "aws_network_interface" "public_sg_eni" {
   subnet_id       = var.public_subnet_id
   security_groups = [aws_security_group.public_ec2.id]
-  
+
   tags = {
     Name = "${var.prefix}-public-sg-eni"
   }
@@ -139,7 +139,7 @@ resource "aws_security_group" "private_ec2" {
     cidr_blocks = ["0.0.0.0/0"]
     description = "Allow HTTPS outbound traffic"
   }
-  
+
   egress {
     from_port   = 80
     to_port     = 80
@@ -166,7 +166,7 @@ resource "aws_security_group" "private_ec2" {
 resource "aws_network_interface" "private_sg_eni" {
   subnet_id       = var.private_subnet_id
   security_groups = [aws_security_group.private_ec2.id]
-  
+
   tags = {
     Name = "${var.prefix}-private-sg-eni"
   }
