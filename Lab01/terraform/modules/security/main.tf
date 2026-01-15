@@ -92,13 +92,13 @@ resource "aws_security_group" "public_ec2" {
     description = "Allow SSH to VPC for bastion access"
   }
 
-  # Allow ICMP (ping) outbound
+  # FIXED: Allow ICMP (ping) outbound restricted to VPC CIDR only
   egress {
     from_port   = -1
     to_port     = -1
     protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow ICMP (ping) outbound"
+    cidr_blocks = ["10.0.0.0/16"]
+    description = "Allow ICMP (ping) outbound to internal VPC only"
   }
 
   tags = {
@@ -148,13 +148,13 @@ resource "aws_security_group" "private_ec2" {
     description = "Allow HTTP outbound traffic"
   }
 
-  # Allow ICMP (ping) outbound
+  # FIXED: Allow ICMP (ping) outbound restricted to VPC CIDR only
   egress {
     from_port   = -1
     to_port     = -1
     protocol    = "icmp"
-    cidr_blocks = ["0.0.0.0/0"]
-    description = "Allow ICMP (ping) outbound"
+    cidr_blocks = ["10.0.0.0/16"]
+    description = "Allow ICMP (ping) outbound to internal VPC only"
   }
 
   tags = {
@@ -170,4 +170,4 @@ resource "aws_network_interface" "private_sg_eni" {
   tags = {
     Name = "${var.prefix}-private-sg-eni"
   }
-} 
+}
